@@ -1,0 +1,88 @@
+syntax = "proto3";
+
+message CognitionRequest {
+    string arch_address = 1;
+    string model_address = 2;
+    string data_address = 3;
+    uint32 samples_count = 4;
+    string pub_key = 5;
+    string signed_message = 6;
+    string contract_address = 7;
+}
+
+message AcceptedTask {
+    string task_id = 1;
+    uint32 time_estimate = 2;
+}
+
+enum DeclineReason {
+    BUSY = 0;
+    INTERNAL_ERROR = 1;
+    UNVERIFIED = 2;
+    BROKEN_MODERL = 3;
+    BROKEN_DATA = 4;
+    IPFS_ERROR = 5;
+}
+
+message DeclinedTask {
+    DeclineReason reason = 1;
+    string message = 2;
+}
+
+message CognitionResponse {
+    bool accepted = 1;
+    oneof payload {
+        AcceptedTask task_info = 2;
+        DeclinedTask decline_info = 3;
+    }
+}
+
+message CognitionResult {
+    string res_address = 1;
+    uint32 samples_count = 2;
+    reserved 3 to 4;
+}
+
+message BatchRequest {
+    string task_id = 1;
+}
+
+message BatchStatus {
+    bool active = 1;
+    uint32 time_estimate = 2;
+}
+
+message CognitionStatus {
+    bool success = 1;
+}
+
+message PeersList {
+    repeated string peers = 1;
+}
+
+message VersionInfo {
+    uint32 major = 1;
+    uint32 minor = 2;
+    uint32 patch = 3;
+    string agent = 4;
+}
+
+service Worker {
+    // ping accepts masternode version number and returns worker version number
+    rpc ping (VersionInfo) returns (VersionInfo) {}
+    // Asks for peer worker suggestions for a given known list of peers
+    rpc suggest_peers (PeersList) returns (PeersList) {}
+
+    rpc cognite_batch (CognitionRequest) returns (CognitionResponse) {}
+    // batch_status accepts task_id returned in CognitionRequest structure
+    rpc batch_status (BatchRequest) returns (BatchStatus) {}
+}
+
+service Masternode {
+    // pong accepts masternode version number and returns worker version number
+    rpc pong (VersionInfo) returns (VersionInfo) {}
+    // Asks for peer masternode suggestions for a given known list of peers
+    rpc suggest_peers (PeersList) returns (PeersList) {}
+
+    rpc batch_completed (CognitionResult) returns (CognitionStatus) {}
+}
