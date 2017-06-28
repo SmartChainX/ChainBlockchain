@@ -12,7 +12,7 @@ This file is part of chainx blockchain
 */
 /** @file AccountManager.cpp
  * @date 2016
- */
+ 
 
 #include <libdevcore/SHA3.h>
 #include <libdevcore/FileSystem.h>
