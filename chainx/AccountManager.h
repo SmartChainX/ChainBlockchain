@@ -27,5 +27,5 @@ private:
 	/// instanciate KeyManager and open the wallet.
 	bool openWallet();
 
-	std::unique_ptr<dev::eth::KeyManager> m_keyManager;
+	std::unique_ptr<dev::chainx::KeyManager> m_keyManager;
 };
