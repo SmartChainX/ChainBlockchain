@@ -1,0 +1,12 @@
+FROM centos:7
+
+RUN yum -q -y install git
+
+RUN /cpp-chainx/scripts/install_cmake.sh --prefix /usr
+RUN /cpp-chainx/scripts/install_deps.sh
+RUN yum -y install boost-devel
+
+RUN cd /tmp && cmake /cpp-chainx
+RUN cd /tmp && make -j8 && make install && ldconfig
+
+ENTRYPOINT ["/usr/local/bin/chainx"]
