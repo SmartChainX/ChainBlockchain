@@ -4,8 +4,8 @@ Simple bash script for listing masternode payments in USD.
 Usage:
 
     save dash-mnTax.sh and execute chmod 755 chainx-mnTax.sh
-    Usage: bash dash-mnTax.sh <chainx> [<START chainx> <END DATE>]
-    Example: bash dash-mnTax.sh XdEmOjfadjfiieur8fjdkewi7849jfdls "2016-01-01 00:00:00" "2016-12-31 23:59:59"
+    Usage: bash chainx-mnTax.sh <chainx> [<START chainx> <END DATE>]
+    Example: bash chainx-mnTax.sh RXXdEmOjfadjfiieur8fjdkewi7849jfdls "2017-01-01 00:00:00" "2017-12-31 23:59:59"
 
 Description:
 
