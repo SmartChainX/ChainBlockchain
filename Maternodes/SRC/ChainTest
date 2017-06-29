@@ -1,6 +1,6 @@
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/config.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/init/mysql.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/class/easydarkcoin.php');
+require_once($_SERVER['DOCUMENT_ROOT'].'/private/class/chainxdarksend.php');
 function check_mn($ip){
 	global $info;
 	if (in_array("$ip:9999", $info)) {
@@ -9,7 +9,7 @@ function check_mn($ip){
 	return 'offline';
 }
 function dash_restart($ip){
-	shell_exec("dash-cli -datadir=/home/chainx/data/$ip stop > /dev/null 2>/dev/null &");
+	shell_exec("chainxd-cli -datadir=/home/chainx/data/$ip stop > /dev/null 2>/dev/null &");
 	sleep(10);
 	shell_exec("taskset -c 0-5 dashd -datadir=/home/chainx/data/$ip -daemon > /dev/null 2>/dev/null &");
 }
