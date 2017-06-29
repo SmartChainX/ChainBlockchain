@@ -8,14 +8,13 @@ RUN apk add --no-cache \
         boost-thread \
         gmp \
         libmicrohttpd \
-        leveldb --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
+     
     && apk add --no-cache --virtual .build-deps \
         git \
         cmake \
         g++ \
         make \
         boost-dev libmicrohttpd-dev \
-        leveldb-dev --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
     && sed -i -E -e 's/include <sys\/poll.h>/include <poll.h>/' /usr/include/boost/asio/detail/socket_types.hpp 
     && mkdir /build && cd /build \
     && make -j8 \
