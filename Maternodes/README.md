@@ -36,7 +36,6 @@ When your block-chain is synchronised you can create a masternode private key. O
 ```bash
 masternode genkey
 ```
-
 Save the output (long string of numbers and letters) in a textfile. You will need the key during **step 3**.
 
 Now create a new account address with the following command:
