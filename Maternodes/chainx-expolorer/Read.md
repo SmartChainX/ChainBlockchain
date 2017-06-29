@@ -17,5 +17,4 @@ Algorithm:
     
     Printing History and calculating Total USD Income
 
-
-    Initial release
+Initial release
