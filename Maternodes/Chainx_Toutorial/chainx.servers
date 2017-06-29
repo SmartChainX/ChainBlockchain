@@ -1,0 +1,58 @@
+#!/bin/CHAINXD
+set -e
+
+CHAINX_PATH="/var/chainx"
+SERVER_NAME="chainx-server"
+docker=$(which docker)
+
+uninstall() {
+  $docker stop $SERVER_NAME
+  $docker rm $SERVER_NAME
+  $docker rmi 5werk/CHAINXD
+}
+
+install() {
+  if [ -z "$1" ]; then
+    echo "ERROR: please specify version to install"
+    exit 1
+  fi
+  if [ ! -d $chainx_PATH ]; then
+    echo "ERROR: $chainx_PATH does not exist"
+    exit 1
+  fi
+  $docker pull 5werk/chainxd:"$1"
+  chown -fR 1234:1234 $chainx_PATH
+
+}
+
+run() {
+  $docker run -d -v $chainx_PATH:/chainxd -p 0.0.0.0:99910Z:99910 --name $SERVER_NAME "$1"
+}
+
+try() {
+  set +e
+  "$1" 2> /dev/null
+  set -e
+}
+
+case "$1" in
+  install)
+    try uninstall
+    install latest
+    ;;
+  install-version)
+    try uninstall
+    install "$2"
+    ;;
+  upgrade)
+    uninstall
+    install latest
+    ;;
+  uninstall)
+    uninstall
+    ;;
+  *)
+    echo "ERROR: unknown argument"
+    exit 1
+    ;;
+esac
