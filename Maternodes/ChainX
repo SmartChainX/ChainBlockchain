@@ -78,7 +78,8 @@ service Worker {
     rpc batch_status (BatchRequest) returns (BatchStatus) {}
 }
 
-service Masternode {
+service Masternode 
+{
     // pong accepts masternode version number and returns worker version number
     rpc pong (VersionInfo) returns (VersionInfo) {}
     // Asks for peer masternode suggestions for a given known list of peers
