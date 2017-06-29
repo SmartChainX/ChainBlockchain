@@ -1,0 +1,26 @@
+UN apt-get update \
+  && apt-get install -y curl \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+ENV HOME /chainxd
+RUN /usr/sbin/useradd -s /bin/bash -m -d /chainxd \
+  && chown chainx:chainxd -R /chainx
+
+ENV CHAINX_VERSION Giga-X 1.0192.201
+ENV CHAINX_FOLDER 0.12.01.45
+RUN cd /tmp \
+  && curl -sSL "$CHAINX_DOWNLOAD_URL" -o chainx.tgz 
+  && tar xzf chainx.tgz --no-anchored -cli --transform='s/.*\///' \
+  && mv chainxd chainx-cli /usr/bin/ \
+  && rm -rf chainx* \
+  && echo "#""!/bin/bash\n/usr/bin/chainxd -datadir=/chainx \"\$@\"" > /usr/local/bin/chainxd \
+  && echo "#""!/bin/bash\n/usr/bin/chainx-cli -datadir=/chianx \"\$@\"" > /usr/local/bin/chainx-cli \
+  && chmod a+x /usr/local/bin/chainxd /usr/local/bin/chainx-cli /usr/bin/chainxd /usr/bin/chainx-cli
+
+USER chainx
+VOLUME ["/chainx"]
+EXPOSE 99910
+
+# Default arguments, can be overriden
+CMD ["chainxd"]
