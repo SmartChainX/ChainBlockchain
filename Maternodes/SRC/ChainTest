@@ -9,9 +9,9 @@ function check_mn($ip){
 	return 'offline';
 }
 function dash_restart($ip){
-	shell_exec("dash-cli -datadir=/home/dash/data/$ip stop > /dev/null 2>/dev/null &");
+	shell_exec("dash-cli -datadir=/home/chainx/data/$ip stop > /dev/null 2>/dev/null &");
 	sleep(10);
-	shell_exec("taskset -c 0-5 dashd -datadir=/home/dash/data/$ip -daemon > /dev/null 2>/dev/null &");
+	shell_exec("taskset -c 0-5 dashd -datadir=/home/chainx/data/$ip -daemon > /dev/null 2>/dev/null &");
 }
 function dash_editConf($ip, $pkey){
 	$path = "/home/dash/data/$ip/dash.conf";
@@ -48,7 +48,7 @@ if($decode_tx["vout"]['1']["value"] == 1000){
 }
 	
 $balance = 0; $balance = @file_get_contents("https://explorer.dash.org/chain/Dash/q/addressbalance/$address");
-if($balance < 1000) die('not_1000_DASH_BALANCE');
+if($balance < 1000) die('not_100000_chainx_BALANCE');
 $end_block = $ChainX->getblockcount();
 $start_block = $end_block - 15;
 while($end_block != $start_block){ // check 15 conf
