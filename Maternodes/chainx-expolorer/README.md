@@ -1,4 +1,6 @@
-chainx-mnTax
+CHAINX BLOCKCHAIN EXPOLORER
+
+Chainx-mnTax
 
 Simple bash script for listing masternode payments in USD.
 Usage:
