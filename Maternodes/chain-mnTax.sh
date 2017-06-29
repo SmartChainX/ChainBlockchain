@@ -12,7 +12,7 @@ fi
 ADDR=$1
 EXPLORER="$EXPLORER$ADDR"
 
-## Check for bitstampUSD.csv and download it if missing
+## Check for and download it if missing
 if [[ -f $BTC_FILE ]]; then
    echo "## Found $BTC_FILE"
 else
