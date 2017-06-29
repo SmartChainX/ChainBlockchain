@@ -88,7 +88,7 @@ date | md5sum
 ```
  We recommend you install the script in `/usr/local/bin/` as follows:
 
-```bash
+```bash 
 ```
 
 Change the default paths in the script, if you don't use `/var/chainx`. If the script is configured to your likings install and run the **5werk/chainxd** docker image like this:
