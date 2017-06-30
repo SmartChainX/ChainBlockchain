@@ -1,5 +1,5 @@
 
-ChainX Core staging tree 0.12.1
+ChainX Core
 ===============================
 
  `v0.giga.12 ChainX Core`
