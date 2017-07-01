@@ -1,0 +1,23 @@
+checkout:
+  post:
+    - git submodule sync
+    - git submodule update --init
+    
+    test:
+  override:
+    - php ./test-suite/run.php --unit-tests
+    
+    test:
+  override:
+    - php ./app/run-server.php --daemon
+    - php ./test-suite/run.php --unit-tests
+    
+    dependencies:
+  override:
+    - bundle install: # note the colon here
+        timeout: 240 # note the double indentation (four spaces) here
+        environment:
+          foo: bar
+          foo2: bar2
+        pwd:
+          test_dir
