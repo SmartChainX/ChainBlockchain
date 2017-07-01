@@ -21,11 +21,6 @@ ChainX also provides a cryptocurrency token called "chx", which can be transferr
 "Water", an internal transaction pricing mechanism, is used to mitigate spam and allocate resources on the network.
 
 
-Operating system | Status
----------------- | ----------
-Ubuntu and macOS | [![TravisCI](https://img.shields.io/travis/ethereum/cpp-ethereum/develop.svg)](https://travis-ci.org/ethereum/cpp-ethereum)
-Windows          | [![AppVeyor](https://img.shields.io/appveyor/ci/ethereum/cpp-ethereum/develop.svg)](https://ci.appveyor.com/project/ethereum/cpp-ethereum)
-License  | MIT license  |
 -------
 
 ChainX Core is released under the terms of the MIT license. See [COPYING](COPYING) for more
