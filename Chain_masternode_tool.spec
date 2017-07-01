@@ -19,30 +19,11 @@ with open(os.path.join(base_dir, 'version.txt')) as fptr:
             version_str = parts[1].strip("'")
             break
 
-add_files = [
- ('img/dmt.png','/img'),
- ('img/dash.ico','/img'),
- ('img/dmt.ico','/img'),
- ('img/arrow-right.ico','/img'),
- ('img/hw-lock.ico','/img'),
- ('img/hw-test.ico','/img'),
- ('img/dash-transfer.png','/img'),
- ('img/check.png','/img'),
- ('img/dollar.png','/img'),
- ('img/gear.png','/img'),
- ('img/hw.png','/img'),
- ('img/info.png','/img'),
- ('img/money-bag.png','/img'),
- ('img/sign.png','/img'),
- ('img/tools.png','/img'),
- ('img/uncheck.png','/img'),
- ('version.txt', '')
-]
+
 
 if os_type == 'win32':
 
-    lib_path = os.path.join(base_dir, 'venv\\win%s\\Lib\\site-packages' % no_bits)
-    qt5_path = os.path.join(lib_path, 'PyQt5\\Qt\\bin')
+    lib_path = os.path.join(base_dir, 'venv\\win%s\\Lib\\site-packages' % no_bits)    qt5_path = os.path.join(lib_path, 'PyQt5\\Qt\\bin')
     sys.path.append(qt5_path)
 
     # add file vcruntime140.dll manually, due to not including by pyinstaller
@@ -69,9 +50,9 @@ else:
     raise Exception('Unsupported OS: %s' % os_type)
 
 # add bitcoin library data file
-add_files.append( (os.path.join(lib_path, 'bitcoin/english.txt'),'/bitcoin') )
+add_files.append( (os.path.join(lib_path, 'chx/english.txt'),'/chx') )
 
-a = Analysis(['src/dash_masternode_tool.py'],
+a = Analysis(['src/chainx_masternode_tool.py'],
              pathex=[base_dir],
              binaries=[],
              datas=add_files,
@@ -91,7 +72,7 @@ exe = EXE(pyz,
           a.binaries,
           a.zipfiles,
           a.datas,
-          name='DashMasternodeTool',
+          name='ChainXMasternodeTool',
           debug=False,
           strip=False,
           upx=False,
@@ -120,9 +101,9 @@ os.chdir(dist_path)
 
 if os_type == 'win32':
     print('Compressing Windows executable')
-    os.system('"C:\\Program Files\\7-Zip\\7z.exe" a %s %s -mx0' % (os.path.join(all_bin_dir, 'DashMasternodeTool_' + version_str + '.win' + no_bits + '.zip'),  'DashMasternodeTool.exe'))
+    os.system('"C:\\Program Files\\7-Zip\\7z.exe" a %s %s -mx0' % (os.path.join(all_bin_dir, 'ChainXMasternodeTool_' + version_str + '.win' + no_bits + '.zip'),  'DashMasternodeTool.exe'))
 elif os_type == 'darwin':
     print('Compressing Mac executable')
-    os.system('zip -r %s %s' % (os.path.join(all_bin_dir, 'DashMasternodeTool_' + version_str + '.mac.zip'),  'DashMasternodeTool.app'))
+    os.system('zip -r %s %s' % (os.path.join(all_bin_dir, 'ChainXMasternodeTool_' + version_str + '.mac.zip'),  'ChainXMasternodeTool.app'))
 elif os_type == 'linux':
 print('Compressing Linux executable')
