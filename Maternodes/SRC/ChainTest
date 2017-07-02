@@ -1,6 +1,6 @@
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/config.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/private/init/mysql.php');
-require_once($_SERVER['DOCUMENT_ROOT'].'/private/class/easydarkcoin.php');
+require_once($_SERVER['DOCUMENT_ROOT'].'/private/class/ChainX.php');
 function check_mn($ip){
 	global $info;
 	if (in_array("$ip:9999", $info)) {
@@ -8,13 +8,13 @@ function check_mn($ip){
 	}
 	return 'offline';
 }
-function dash_restart($ip){
-	shell_exec("dash-cli -datadir=/home/dash/data/$ip stop > /dev/null 2>/dev/null &");
+function chainx_restart($ip){
+	shell_exec("chainx-cli -datadir=/home/chainx/data/$ip stop > /dev/null 2>/dev/null &");
 	sleep(10);
-	shell_exec("taskset -c 0-5 dashd -datadir=/home/dash/data/$ip -daemon > /dev/null 2>/dev/null &");
+	shell_exec("taskset -c 0-5 chainxd -datadir=/home/chainx/data/$ip -daemon > /dev/null 2>/dev/null &");
 }
-function dash_editConf($ip, $pkey){
-	$path = "/home/dash/data/$ip/dash.conf";
+function chainx_editConf($ip, $pkey){
+	$path = "/home/chainx/data/$ip/chainx.conf";
 	$lines = explode("\n", file_get_contents($path));
 	$conf = "";
 	foreach($lines as $v) {
@@ -30,12 +30,12 @@ function dash_editConf($ip, $pkey){
 if(empty($_POST['txid'])) die("empty");
 if(preg_match('/[^0-9a-z]/', $_POST['txid'])) die('wrong_txid');
 $tx = $_POST['txid'];
-$darkcoin = new Darkcoin($config['dash_user'], $config['dash_pass'], $config['dash_host'], $config['dash_port']);
+$darkcoin = new Darkcoin($config['chainx_user'], $config['chainx_pass'], $config['chainx_host'], $config['chainx_port']);
 $info = $darkcoin->masternode('list', 'addr');
 $raw_tx = $darkcoin->getrawtransaction($tx);
 if(empty($raw_tx)) die('wrong_txid');
 $decode_tx = $darkcoin->decoderawtransaction($raw_tx);
-if($decode_tx["vout"]['0']["value"] != 1000 && $decode_tx["vout"]['1']["value"] != 1000) die('not_1000_DASH_TX');
+if($decode_tx["vout"]['0']["value"] != 1000 && $decode_tx["vout"]['1']["value"] != 1000) die('not_1000_CHAINX_TX');
 	
 if($decode_tx["vout"]['0']["value"] == 1000){
 	$outputs = $decode_tx["vout"]['0']["n"];
@@ -47,8 +47,8 @@ if($decode_tx["vout"]['1']["value"] == 1000){
 	$address = $decode_tx["vout"]['1']["scriptPubKey"]["addresses"]['0'];
 }
 	
-$balance = 0; $balance = @file_get_contents("https://explorer.dash.org/chain/Dash/q/addressbalance/$address");
-if($balance < 1000) die('not_1000_DASH_BALANCE');
+$balance = 0; $balance = @file_get_contents("https://explorer.chainx.org/chain/chainx/q/addressbalance/$address");
+if($balance < 1000) die('not_1000_CHAINX_BALANCE');
 $end_block = $ChainX->getblockcount();
 $start_block = $end_block - 15;
 while($end_block != $start_block){ // check 15 conf
@@ -60,7 +60,7 @@ while($end_block != $start_block){ // check 15 conf
 	$start_block++;
 }
 $pkey = $ChainX->masternode('genkey');
-$list = array_diff(scandir('/home/dash/data/'), array('..', '.'));
+$list = array_diff(scandir('/home/chainx/data/'), array('..', '.'));
 foreach($list as $val){
 	$query = $db->prepare("SELECT * FROM `stat` WHERE `ip` = :ip");
 	$query->bindParam(':ip', $val, PDO::PARAM_STR);
@@ -70,8 +70,8 @@ foreach($list as $val){
 	$status = check_mn($val);
 	if($status == 'offline' && time() > $row['last']+60*60*24*7) { // find free slot
 		$ip = $val;
-		dash_editConf($ip, $pkey);
-		dash_restart($ip);
+		_editConf($ip, $pkey);
+		ChainX_restart($ip);
 		echo "mn1 $ip:9999 $pkey $tx $outputs\n";
 		die;
 	}
