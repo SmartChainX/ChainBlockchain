@@ -9,8 +9,8 @@ from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt, pyqtSlot, QPoint
 from PyQt5.QtWidgets import QInputDialog, QDialog, QLayout, QListWidgetItem, QPushButton, QCheckBox, QWidget, \
     QHBoxLayout, QMessageBox, QLineEdit, QMenu, QApplication, QDialogButtonBox, QAbstractButton
-from app_config import AppConfig, DashNetworkConnectionCfg
-from dashd_intf import DashdInterface
+from app_config import AppConfig, ChainXNetworkConnectionCfg
+from chainxd_intf import chainxdInterface
 from psw_cache import SshPassCache
 from ui.ui_config_dlg import Ui_ConfigDlg
 from ui.ui_conn_rpc_wdg import Ui_RpcConnection
@@ -152,7 +152,7 @@ class ConfigDlg(QDialog, Ui_ConfigDlg, WndUtils):
         self.rpc_cfg_widget.btnShowPassword.pressed.connect(self.on_btnShowPassword_pressed)
         self.rpc_cfg_widget.btnShowPassword.released.connect(self.on_btnShowPassword_released)
 
-        if len(self.local_config.dash_net_configs):
+        if len(self.local_config.chainx_net_configs):
             self.lstConns.setCurrentRow(0)
 
         if self.local_config.hw_type == 'TREZOR':
@@ -175,7 +175,7 @@ class ConfigDlg(QDialog, Ui_ConfigDlg, WndUtils):
     def displayConnsConfigs(self):
         # display all connection configs
         self.lstConns.clear()
-        for cfg in self.local_config.dash_net_configs:
+        for cfg in self.local_config.chainx_net_configs:
             item = QListWidgetItem(cfg.get_description())
             item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
             item.setCheckState(Qt.Checked if cfg.enabled else Qt.Unchecked)
@@ -214,7 +214,7 @@ class ConfigDlg(QDialog, Ui_ConfigDlg, WndUtils):
         ids = self.lstConns.selectedIndexes()
         cfgs = []
         for index in ids:
-            cfgs.append(self.local_config.dash_net_configs[index.row()])
+            cfgs.append(self.local_config.chainx_net_configs[index.row()])
         if len(cfgs):
             text = self.local_config.encode_connections_to_json(cfgs)
             if text:
@@ -256,9 +256,9 @@ class ConfigDlg(QDialog, Ui_ConfigDlg, WndUtils):
 
     def applyConfigChanges(self):
         if self.is_modified:
-            self.config.dash_net_configs = copy.deepcopy(self.local_config.dash_net_configs)
+            self.config chainx_net_configs = copy.deepcopy(self.local_config.chainx_net_configs)
             self.config.conn_config_changed()
-            self.config.random_dash_net_config = self.local_config.random_dash_net_config
+            self.config.random_chainx_net_config = self.local_config.random_chainx_net_config
             if self.config.hw_type != self.local_config.hw_type:
                 # in the main app window, hw session must be reconnected
                 self.config.hw_type = self.local_config.hw_type
@@ -273,7 +273,7 @@ class ConfigDlg(QDialog, Ui_ConfigDlg, WndUtils):
 
     def updateToolButtonsState(self):
         selected = self.lstConns.currentRow() >= 0
-        last = self.lstConns.currentRow() == len(self.local_config.dash_net_configs)-1
+        last = self.lstConns.currentRow() == len(self.local_config.chainx_net_configs)-1
         first = self.lstConns.currentRow() == 0
 
         # disabling/enabling action connected to a button results in setting button's text from actions text
@@ -295,7 +295,7 @@ class ConfigDlg(QDialog, Ui_ConfigDlg, WndUtils):
         Update current connection description on list 
         """
         if self.lstConns.currentRow() >= 0:
-            cfg = self.local_config.dash_net_configs[self.lstConns.currentRow()]
+            cfg = self.local_config.chainx_net_configs[self.lstConns.currentRow()]
             item = self.lstConns.currentItem()
             if item:
                 old_state = self.disable_cfg_update
@@ -307,8 +307,8 @@ class ConfigDlg(QDialog, Ui_ConfigDlg, WndUtils):
 
     @pyqtSlot()
     def on_actNewConn_triggered(self):
-        cfg = DashNetworkConnectionCfg('rpc')
-        self.local_config.dash_net_configs.append(cfg)
+        cfg = ChainXNetworkConnectionCfg('rpc')
+        self.local_config.chainx_net_configs.append(cfg)
 
         # add config to the connections list:
         item = QListWidgetItem(cfg.get_description())
@@ -334,10 +334,10 @@ class ConfigDlg(QDialog, Ui_ConfigDlg, WndUtils):
         ids = self.lstConns.selectedIndexes()
         cfgs = []
         for index in ids:
-            cfgs.append(self.local_config.dash_net_configs[index.row()])
+            cfgs.append(self.local_config.chainx_net_configs[index.row()])
 
         if len(ids) >= 0:
-            cfg = self.local_config.dash_net_configs[self.lstConns.currentRow()]
+            cfg = self.local_config.chainx_net_configs[self.lstConns.currentRow()]
 
             if self.queryDlg('Do you really want to delete selected %d connection(s)?' % len(ids),
                              buttons=QMessageBox.Yes | QMessageBox.Cancel,
@@ -351,16 +351,16 @@ class ConfigDlg(QDialog, Ui_ConfigDlg, WndUtils):
                 # delete connections with descending order to not renumerate indexes items to-delete while deleting
                 # items
                 for row in rows_to_del:
-                    del self.local_config.dash_net_configs[row]
+                    del self.local_config.chainx_net_configs[row]
                     self.lstConns.takeItem(row)
 
                 # try to select the same row
-                if last_row_selected < len(self.local_config.dash_net_configs):
+                if last_row_selected < len(self.local_config.chainx_net_configs):
                     row = last_row_selected
                 else:
-                    row = len(self.local_config.dash_net_configs) - 1
+                    row = len(self.local_config.chainx_net_configs) - 1
 
-                if row < len(self.local_config.dash_net_configs):
+                if row < len(self.local_config.chainx_net_configs):
                     # select the last row
                     item = self.lstConns.item(row)
                     if item:
@@ -372,7 +372,7 @@ class ConfigDlg(QDialog, Ui_ConfigDlg, WndUtils):
     def on_btnMoveUpConn_clicked(self):
         if self.lstConns.currentRow() > 0:
             idx_from = self.lstConns.currentRow()
-            l = self.local_config.dash_net_configs
+            l = self.local_config.chainx_net_configs
             l[idx_from-1], l[idx_from] = l[idx_from], l[idx_from-1]  # swap two elements
             cur_item = self.lstConns.takeItem(idx_from)
             self.lstConns.insertItem(idx_from-1, cur_item)
@@ -382,8 +382,8 @@ class ConfigDlg(QDialog, Ui_ConfigDlg, WndUtils):
     @pyqtSlot()
     def on_btnMoveDownConn_clicked(self):
         idx_from = self.lstConns.currentRow()
-        if idx_from >= 0 and idx_from < len(self.local_config.dash_net_configs)-1:
-            l = self.local_config.dash_net_configs
+        if idx_from >= 0 and idx_from < len(self.local_config.chainx_net_configs)-1:
+            l = self.local_config.chainx_net_configs
             l[idx_from+1], l[idx_from] = l[idx_from], l[idx_from+1]  # swap two elements
             cur_item = self.lstConns.takeItem(idx_from)
             self.lstConns.insertItem(idx_from+1, cur_item)
@@ -415,9 +415,9 @@ class ConfigDlg(QDialog, Ui_ConfigDlg, WndUtils):
 
     def on_lstConns_itemChanged(self, item):
         idx = self.lstConns.row(item)
-        if not self.disable_cfg_update and idx >= 0 and idx < len(self.local_config.dash_net_configs):
+        if not self.disable_cfg_update and idx >= 0 and idx < len(self.local_config.chainx_net_configs):
             checked = item.checkState() == Qt.Checked
-            cfg = self.local_config.dash_net_configs[idx]
+            cfg = self.local_config.chainx_net_configs[idx]
             cfg.enabled = checked
             self.set_modified()
             self.updateUi()
@@ -428,7 +428,7 @@ class ConfigDlg(QDialog, Ui_ConfigDlg, WndUtils):
 
     def on_chbConnEnabled_toggled(self, checked):
         if not self.disable_cfg_update and self.lstConns.currentRow() >= 0:
-            cfg = self.local_config.dash_net_configs[self.lstConns.currentRow()]
+            cfg = self.local_config.chainx_net_configs[self.lstConns.currentRow()]
             cfg.enabled = checked
             try:
                 self.disable_cfg_update = True
@@ -443,67 +443,67 @@ class ConfigDlg(QDialog, Ui_ConfigDlg, WndUtils):
         self.ssh_tunnel_widget.setVisible(self.chbUseSshTunnel.isChecked())
         self.btnSshReadRpcConfig.setVisible(self.chbUseSshTunnel.isChecked())
         if not self.disable_cfg_update and self.lstConns.currentRow() >= 0:
-            cfg = self.local_config.dash_net_configs[self.lstConns.currentRow()]
+            cfg = self.local_config.chainx_net_configs[self.lstConns.currentRow()]
             cfg.use_ssh_tunnel = checked
             self.updateCurConnDesc()
             self.set_modified()
 
     def on_edtRpcHost_textEdited(self, text):
         if not self.disable_cfg_update and self.lstConns.currentRow() >= 0:
-            cfg = self.local_config.dash_net_configs[self.lstConns.currentRow()]
+            cfg = self.local_config.chainx_net_configs[self.lstConns.currentRow()]
             cfg.host = text
             self.updateCurConnDesc()
             self.set_modified()
 
     def on_edtRpcPort_textEdited(self, text):
         if not self.disable_cfg_update and self.lstConns.currentRow() >= 0:
-            cfg = self.local_config.dash_net_configs[self.lstConns.currentRow()]
+            cfg = self.local_config.chainx_net_configs[self.lstConns.currentRow()]
             cfg.port = text
             self.updateCurConnDesc()
             self.set_modified()
 
     def on_edtRpcUsername_textEdited(self, text):
         if not self.disable_cfg_update and self.lstConns.currentRow() >= 0:
-            cfg = self.local_config.dash_net_configs[self.lstConns.currentRow()]
+            cfg = self.local_config.chainx_net_configs[self.lstConns.currentRow()]
             cfg.username = text
             self.set_modified()
 
     def on_edtRpcPassword_textEdited(self, text):
         if not self.disable_cfg_update and self.lstConns.currentRow() >= 0:
-            cfg = self.local_config.dash_net_configs[self.lstConns.currentRow()]
+            cfg = self.local_config.chainx_net_configs[self.lstConns.currentRow()]
             cfg.password = text
             self.set_modified()
 
     def chbRpcSSL_toggled(self, checked):
         if not self.disable_cfg_update and self.lstConns.currentRow() >= 0:
-            cfg = self.local_config.dash_net_configs[self.lstConns.currentRow()]
+            cfg = self.local_config.chianx_net_configs[self.lstConns.currentRow()]
             cfg.use_ssl = checked
             self.updateCurConnDesc()
             self.set_modified()
 
     def on_edtSshHost_textEdited(self, text):
         if not self.disable_cfg_update and self.lstConns.currentRow() >= 0:
-            cfg = self.local_config.dash_net_configs[self.lstConns.currentRow()]
+            cfg = self.local_config.chainx_net_configs[self.lstConns.currentRow()]
             cfg.ssh_conn_cfg.host = text
             self.updateCurConnDesc()
             self.set_modified()
 
     def on_edtSshPort_textEdited(self, text):
         if not self.disable_cfg_update and self.lstConns.currentRow() >= 0:
-            cfg = self.local_config.dash_net_configs[self.lstConns.currentRow()]
+            cfg = self.local_config.chainx_net_configs[self.lstConns.currentRow()]
             cfg.ssh_conn_cfg.port = text
             self.updateCurConnDesc()
             self.set_modified()
 
     def on_edtSshUsername_textEdited(self, text):
         if not self.disable_cfg_update and self.lstConns.currentRow() >= 0:
-            cfg = self.local_config.dash_net_configs[self.lstConns.currentRow()]
+            cfg = self.local_config.chainx_net_configs[self.lstConns.currentRow()]
             cfg.ssh_conn_cfg.username = text
             self.set_modified()
 
     def on_chbRandomConn_toggled(self, checked):
         if not self.disable_cfg_update:
-            self.local_config.random_dash_net_config = checked
+            self.local_config.random_chainx_net_config = checked
             self.set_modified()
 
     def updateUi(self):
@@ -514,7 +514,7 @@ class ConfigDlg(QDialog, Ui_ConfigDlg, WndUtils):
                 self.chbConnEnabled.setVisible(True)
                 self.chbUseSshTunnel.setVisible(True)
                 self.btnTestConnection.setVisible(True)
-                cfg = self.local_config.dash_net_configs[self.lstConns.currentRow()]
+                cfg = self.local_config.chainx_net_configs[self.lstConns.currentRow()]
                 self.chbConnEnabled.setChecked(cfg.enabled)
                 self.ssh_tunnel_widget.setVisible(cfg.use_ssh_tunnel)
                 self.btnSshReadRpcConfig.setVisible(cfg.use_ssh_tunnel)
@@ -540,14 +540,14 @@ class ConfigDlg(QDialog, Ui_ConfigDlg, WndUtils):
                 self.ssh_tunnel_widget.setVisible(False)
                 self.btnSshReadRpcConfig.setVisible(False)
                 self.rpc_cfg_widget.setVisible(False)
-            self.chbRandomConn.setChecked(self.local_config.random_dash_net_config)
+            self.chbRandomConn.setChecked(self.local_config.random_chainx_net_config)
             self.buttonBox.button(QDialogButtonBox.Apply).setEnabled(self.get_is_modified())
         finally:
             self.disable_cfg_update = dis_old
 
     def on_btnSshReadRpcConfig_clicked(self):
         if self.lstConns.currentRow() >= 0:
-            cfg = self.local_config.dash_net_configs[self.lstConns.currentRow()]
+            cfg = self.local_config.chainx_net_configs[self.lstConns.currentRow()]
             host = cfg.ssh_conn_cfg.host
             port = cfg.ssh_conn_cfg.port
             username = cfg.ssh_conn_cfg.username
@@ -563,19 +563,19 @@ class ConfigDlg(QDialog, Ui_ConfigDlg, WndUtils):
                 username, ok = QInputDialog.getText(self, 'Username Dialog', 'Enter username for SSH connection:')
             if not ok or not username:
                 return
-            from dashd_intf import DashdSSH
-            ssh = DashdSSH(host, int(port), username)
+            from chainxd_intf import chainxdSSH
+            ssh = chainxdSSH(host, int(port), username)
             try:
                 ssh.connect()
-                dashd_conf = ssh.find_dashd_config()
+                chainxd_conf = ssh.find_chainxd_config()
                 self.disable_cfg_update = True
-                if isinstance(dashd_conf, tuple) and len(dashd_conf) >= 3:
-                    if not dashd_conf[0]:
-                        self.infoMsg('Remore Dash daemon seems to be shut down')
-                    elif not dashd_conf[1]:
-                        self.infoMsg('Could not find remote dashd.conf file')
+                if isinstance(chainxd_conf, tuple) and len(chainxd_conf) >= 3:
+                    if not chainxd_conf[0]:
+                        self.infoMsg('Remore chainx daemon seems to be shut down')
+                    elif not chainxd_conf[1]:
+                        self.infoMsg('Could not find remote chainxd.conf file')
                     else:
-                        file = dashd_conf[2]
+                        file = chainxd_conf[2]
                         rpcuser = file.get('rpcuser', '')
                         rpcpassword = file.get('rpcpassword', '')
                         rpcport = file.get('rpcport', '9998')
@@ -598,18 +598,18 @@ class ConfigDlg(QDialog, Ui_ConfigDlg, WndUtils):
                             self.is_modified = modified
 
                         if file.get('server', '1') == '0':
-                            self.warnMsg("Remote dash.conf parameter 'server' is set to '0', so RPC interface will "
+                            self.warnMsg("Remote chainx.conf parameter 'server' is set to '0', so RPC interface will "
                                          "not work.")
                         if not rpcuser:
-                            self.warnMsg("Remote dash.conf parameter 'rpcuser' is not set, so RPC interface will  "
+                            self.warnMsg("Remote chainx.conf parameter 'rpcuser' is not set, so RPC interface will  "
                                          "not work.")
                         if not rpcpassword:
-                            self.warnMsg("Remote dash.conf parameter 'rpcpassword' is not set, so RPC interface will  "
+                            self.warnMsg("Remote chainx.conf parameter 'rpcpassword' is not set, so RPC interface will  "
                                          "not work.")
                     self.updateUi()
-                elif isinstance(dashd_conf, str):
-                    self.warnMsg("Couldn't read remote dashd configuration file due the following error: " +
-                                 dashd_conf)
+                elif isinstance(chainxd_conf, str):
+                    self.warnMsg("Couldn't read remote chainxd configuration file due the following error: " +
+                                 chainxd_conf)
                 ssh.disconnect()
             except Exception as e:
                 self.errorMsg(str(e))
@@ -619,11 +619,11 @@ class ConfigDlg(QDialog, Ui_ConfigDlg, WndUtils):
 
     def on_btnTestConnection_clicked(self):
         if self.lstConns.currentRow() >= 0:
-            cfg = self.local_config.dash_net_configs[self.lstConns.currentRow()]
+            cfg = self.local_config.chainx_net_configs[self.lstConns.currentRow()]
 
-            dashd_intf = DashdInterface(self.config, window=self, connection=cfg)  # we are testing a specific connection
+            chainxd_intf = chainxdInterface(self.config, window=self, connection=cfg)  # we are testing a specific connection
             try:
-                info = dashd_intf.getinfo()
+                info = chainxd_intf.getinfo()
                 if info:
                     if info.get('protocolversion'):
                         self.infoMsg('Connection successful')
@@ -633,4 +633,4 @@ class ConfigDlg(QDialog, Ui_ConfigDlg, WndUtils):
                 self.errorMsg('Connect error. Details: ' + str(e))
             finally:
 
-del dashd_intf
+del chainxd_intf
