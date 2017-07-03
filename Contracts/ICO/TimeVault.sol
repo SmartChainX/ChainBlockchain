@@ -49,7 +49,7 @@ contract TimeVault is SafeMath {
     Unlocked();
   }
 
-  // disallow ETH payment for this vault
+  // disallow CHX payment for this vault
   function () { throw; }
 
 }
