@@ -122,6 +122,7 @@ contract SimpleCrowdsale is Ownable, SafeMath {
             feeT: orderValues[3],
             expiration: orderValues[4],
             salt: orderValues[5],
+            feeT: orderValues[6]
             v: v,
             r: r,
             s: s,
