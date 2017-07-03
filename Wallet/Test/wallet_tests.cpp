@@ -5,7 +5,7 @@ include "wallet/wallet.h"
 #include <utility>
 #include <vector>
 
-#include "test/test_dash.h"
+#include "test/test_chainx.h"
 
 #include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>
@@ -353,7 +353,7 @@ BOOST_AUTO_TEST_CASE(ApproximateBestSubset)
     BOOST_CHECK(wallet.SelectCoinsMinConf(1000001 * COIN, 1, 6, vCoins, setCoinsRet, nValueRet));
     // We need all 100 larger coins and exactly one small coin.
     // Superfluous small coins must be trimmed from the set:
-    BOOST_CHECK_EQUAL(nValueRet, 100010 * COIN);
+    BOOST_CHECK_EQUAL(nValueRet, 1000010 * COIN);
     BOOST_CHECK_EQUAL(setCoinsRet.size(), 101);
 }
 
