@@ -84,7 +84,7 @@ if os_type == 'darwin':
                  name='ChainX Masternodes',
                  icon='img/dmt.icns',
                  bundle_identifier=None,
-                     info_plist={
+                     info_plist= 'ChainxMasternodeTool.exe'
                         'NSHighResolutionCapable': 'True'
                      }
                  )
