@@ -27,7 +27,7 @@ contract TimeVault is SafeMath {
   function TimeVault(address _teamMultisig, StandardToken _token, uint _unlockedAt) {
 
     teamMultisig = _teamMultisig;
-    token = _token;
+    token = CHX_token;
     unlockedAt = _unlockedAt;
 
     // Sanity check
