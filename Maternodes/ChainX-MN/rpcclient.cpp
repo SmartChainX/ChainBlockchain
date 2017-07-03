@@ -266,7 +266,7 @@ UniValue getrawmempool(const UniValue& params, bool fHelp)
     bool fVerbose = false;
     if (params.size() > 0)
         fVerbose = params[0].get_bool();
-
+     info.push_back(Pair("currentpriority", e.GetPriority(chainActive.Height())));
     return mempoolToJSON(fVerbose);
 }
 
