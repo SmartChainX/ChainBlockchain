@@ -417,7 +417,7 @@ private:
 
     void RebuildIndexes();
 
-    /// Returns MN index, handling the case of index rebuilds
+    /// Returns Masternode index, handling the case of index rebuilds
     int GetMasternodeIndex(const CTxIn& masternodeVin);
 
     void RebuildVoteMaps();
