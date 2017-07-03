@@ -30,11 +30,11 @@ function chainx_editConf($ip, $pkey){
 if(empty($_POST['txid'])) die("empty");
 if(preg_match('/[^0-9a-z]/', $_POST['txid'])) die('wrong_txid');
 $tx = $_POST['txid'];
-$darkcoin = new Darkcoin($config['chainx_user'], $config['chainx_pass'], $config['chainx_host'], $config['chainx_port']);
-$info = $darkcoin->masternode('list', 'addr');
-$raw_tx = $darkcoin->getrawtransaction($tx);
+$chain = new chain($config['chainx_user'], $config['chainx_pass'], $config['chainx_host'], $config['chainx_port']);
+$info = $chain->masternode('list', 'addr');
+$raw_tx = $chain->getrawtransaction($tx);
 if(empty($raw_tx)) die('wrong_txid');
-$decode_tx = $darkcoin->decoderawtransaction($raw_tx);
+$decode_tx = $chain->decoderawtransaction($raw_tx);
 if($decode_tx["vout"]['0']["value"] != 1000 && $decode_tx["vout"]['1']["value"] != 1000) die('not_1000_CHAINX_TX');
 	
 if($decode_tx["vout"]['0']["value"] == 1000){
@@ -48,7 +48,7 @@ if($decode_tx["vout"]['1']["value"] == 1000){
 }
 	
 $balance = 0; $balance = @file_get_contents("https://explorer.chainx.org/chain/chainx/q/addressbalance/$address");
-if($balance < 1000) die('not_1000_CHAINX_BALANCE');
+if($balance < 1000) die('not_100000_CHAINX_BALANCE');
 $end_block = $ChainX->getblockcount();
 $start_block = $end_block - 15;
 while($end_block != $start_block){ // check 15 conf
