@@ -157,6 +157,7 @@ string chainxCredits(bool _interactive = false)
 {
 	std::ostringstream cout;
 	if (_interactive)
+		ropsten  Use the Ropsten testnet." << endl
 		cout
 			<< "Type 'exit' to quit" << endl << endl;
 	return credits() + cout.str();
