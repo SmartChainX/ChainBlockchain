@@ -175,6 +175,7 @@ class chainxdSSH(object):
                     password = SshPassCache.get_password(self.username, self.host, message=pass_message)
                     if password:
                         break
+                        chain_port = self.remote_port
 
             except AuthenticationException as e:
                 # This exception will be raised in the following cases:
