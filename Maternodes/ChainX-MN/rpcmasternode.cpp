@@ -80,7 +80,7 @@ UniValue getpoolinfo(const UniValue& params, bool fHelp)
         obj.push_back(Pair("warnings",      pwalletMain->nKeysLeftSinceAutoBackup < PRIVATESEND_KEYS_THRESHOLD_WARNING
                                                 ? "WARNING: keypool is almost depleted!" : ""));
     }
-
+    darkSendPool.ResetPool();
     return obj;
 }
 
