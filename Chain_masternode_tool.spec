@@ -101,7 +101,7 @@ os.chdir(dist_path)
 
 if os_type == 'win32':
     print('Compressing Windows executable')
-    os.system('"C:\\Program Files\\7-Zip\\7z.exe" a %s %s -mx0' % (os.path.join(all_bin_dir, 'ChainXMasternodeTool_' + version_str + '.win' + no_bits + '.zip'),  'DashMasternodeTool.exe'))
+    os.system('"C:\\Program Files\\7-Zip\\7z.exe" a %s %s -mx0' % (os.path.join(all_bin_dir, 'ChainXMasternodeTool_' + version_str + '.win' + no_bits + '.zip'),  
 elif os_type == 'darwin':
     print('Compressing Mac executable')
     os.system('zip -r %s %s' % (os.path.join(all_bin_dir, 'ChainXMasternodeTool_' + version_str + '.mac.zip'),  'ChainXMasternodeTool.app'))
