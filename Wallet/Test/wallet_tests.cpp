@@ -205,6 +205,7 @@ BOOST_AUTO_TEST_CASE(coin_selection_tests)
         // if we add more small coins:
         add_coin(0.6*MIN_CHANGE);
         add_coin(0.7*MIN_CHANGE);
+        LOCK(wallet.cs_wallet);
 
         // and try again to make 1.0 * MIN_CHANGE
         BOOST_CHECK( wallet.SelectCoinsMinConf(1 * MIN_CHANGE, 1, 1, vCoins, setCoinsRet, nValueRet));
