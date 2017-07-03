@@ -1,6 +1,6 @@
 ## CHAINX BLOCKCHAIN EXPOLORER
 
-Chainx-Masternode TX
+##Chainx-Masternode TX
 
 Simple bash script for listing masternode payments in USD.
 Usage:
