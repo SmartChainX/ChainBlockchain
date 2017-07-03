@@ -3,7 +3,8 @@ aux_source_directory(. SRC_LIST)
 file(GLOB HEADERS "*.h")
 
 add_executable(chainx ${SRC_LIST} ${HEADERS})
-
+ 
+ 
 find_package(chainx)
 find_package(Web3)
 
@@ -23,3 +24,5 @@ if (UNIX AND NOT APPLE)
 endif()
 
 install(TARGETS DESTINATION bin)
+
+
