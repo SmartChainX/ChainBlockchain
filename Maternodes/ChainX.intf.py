@@ -102,13 +102,13 @@ class UnknownError(Exception):
     pass
 
 
-class DashdConnectionError(Exception):
+class chainxdConnectionError(Exception):
     def __init__(self, org_exception):
         Exception.__init__(org_exception)
         self.org_exception = org_exception
 
 
-class DashdSSH(object):
+class chainxdSSH(object):
     def __init__(self, host, port, username):
         self.host = host
         self.port = port
@@ -213,149 +213,7 @@ class DashdSSH(object):
         else:
             raise Exception('SSH not connected')
 
-    def find_dashd_config(self):
-        """
-        Try to read configuration of remote dash daemon. In particular we need parameters concering rpc
-        configuration.
-        :return: tuple (dashd_running, dashd_config_found, dashd config file contents as dict)
-                or error string in error occured
-        """
-        dashd_running = False
-        dashd_config_found = False
-        if not self.ssh:
-            raise Exception('SSH session not ready')
-        try:
-            # find dashd process id if running
-            try:
-                pids = self.remote_command('ps -C "dashd" -o pid')
-            except UnknownError:
-                raise Exception('is dashd running on the remote machine?')
-            pid = None
-            if isinstance(pids, list):
-                pids = [pid.strip() for pid in pids]
-            if len(pids) >= 2 and pids[0] == 'PID' and re.match('\d+', pids[1]):
-                pid = pids[1]
-            elif len(pids) >= 1 and re.match('\d+', pids[0]):
-                pid = pids[1]
-            config = {}
-            if pid:
-                dashd_running = True
-                # using dashd pid find its executable path and then .dashcore directory and finally dash.conf file
-                executables = self.remote_command('ls -l /proc/' + str(pid) + '/exe')
-                if executables and len(executables) >= 1:
-                    elems = executables[0].split('->')
-                    if len(elems) == 2:
-                        executable = elems[1].strip()
-                        dashd_dir = os.path.dirname(executable)
-                        dash_conf_file = dashd_dir + '/.dashcore/dash.conf'
-                        conf_lines = []
-                        try:
-                            conf_lines = self.remote_command('cat ' + dash_conf_file)
-                        except Exception as e:
-                            # probably error no such file or directory
-                            # try to read dashd's cwd + cmdline
-                            cwd_lines = self.remote_command('ls -l /proc/' + str(pid) + '/cwd')
-                            if cwd_lines:
-                                elems = cwd_lines[0].split('->')
-                                if len(elems) >= 2:
-                                    cwd = elems[1]
-                                    dash_conf_file = cwd + '/.dashcore/dash.conf'
-                                    try:
-                                        conf_lines = self.remote_command('cat ' + dash_conf_file)
-                                    except Exception as e:
-                                        # second method did not suceed, so assume, that conf file is located
-                                        # i /home/<username>/.dashcore directory
-                                        dash_conf_file = '/home/' + self.username + '/.dashcore/dash.conf'
-                                        conf_lines = self.remote_command('cat ' + dash_conf_file)
-
-                        for line in conf_lines:
-                            elems = [e.strip() for e in line.split('=')]
-                            if len(elems) == 2:
-                                config[elems[0]] = elems[1]
-                        dashd_config_found = True
-            return dashd_running, dashd_config_found, config
-        except Exception as e:
-            return str(e)
-
-    def disconnect(self):
-        if self.ssh:
-            if self.ssh_thread:
-                self.ssh_thread.stop()
-            self.ssh.close()
-            del self.ssh
-            self.ssh = None
-            self.connected = False
-
-
-class DashdIndexException(JSONRPCException):
-    """
-    Exception for notifying, that dash daemon should have indexing option tuned on
-    """
-    def __init__(self, parent_exception):
-        JSONRPCException.__init__(self, parent_exception.error)
-        self.message = self.message + \
-                       '\n\nMake sure the dash daemon you are connecting to has the following options enabled in ' \
-                       'its dash.conf:\n\n' + \
-                       'addressindex=1\n' + \
-                       'spentindex=1\n' + \
-                       'timestampindex=1\n' + \
-                       'txindex=1\n\n' + \
-                       'Changing these parameters requires to execute dashd with "-reindex" option (linux: ./dashd -reindex)'
-
-
-def control_rpc_call(func):
-    """
-    Decorator function for catching HTTPConnection timeout and then resetting the connection.
-    :param func: DashdInterface's method decorated
-    """
-    def catch_timeout_wrapper(*args, **kwargs):
-        ret = None
-        last_exception = None
-        self = args[0]
-        self.mark_call_begin()
-        for try_nr in range(1, 5):
-            try:
-                try:
-                    ret = func(*args, **kwargs)
-                    last_exception = None
-                    self.mark_cur_conn_cfg_is_ok()
-                    break
-                except (ConnectionResetError, ConnectionAbortedError, httplib.CannotSendRequest, BrokenPipeError) as e:
-                    last_exception = e
-                    self.http_conn.close()
-                except JSONRPCException as e:
-                    if e.code == -5 and e.message == 'No information available for address':
-                        raise DashdIndexException(e)
-                    elif e.error.get('message','').find('403 Forbidden'):
-                        self.http_conn.close()
-                        raise DashdConnectionError(e)
-                    else:
-                        self.http_conn.close()
-
-                except (socket.gaierror, ConnectionRefusedError, TimeoutError, socket.timeout) as e:
-                    # exceptions raised by not likely functioning dashd node; try to switch to another node
-                    # if there is any in the config
-                    raise DashdConnectionError(e)
-
-            except DashdConnectionError as e:
-                # try another net config if possible
-                if not self.switch_to_next_config():
-                    self.last_error_message = str(e.org_exception)
-                    raise e.org_exception  # couldn't use another conn config, raise last exception
-                else:
-                    try_nr -= 1  # another config retries do not count
-
-        if last_exception:
-            raise last_exception
-        return ret
-    return catch_timeout_wrapper
-
-
-class DashdInterface(WndUtils):
-    def __init__(self, config, window, connection=None, on_connection_begin_callback=None,
-                 on_connection_try_fail_callback=None, on_connection_finished_callback=None):
-        WndUtils.__init__(self, app_path=config.app_path)
-        assert isinstance(config, AppConfig)
+    
 
         self.config = config
         # conn configurations are used from the first item in the list; if one fails, then next is taken
@@ -395,7 +253,7 @@ class DashdInterface(WndUtils):
         self.connections = self.config.get_ordered_conn_list()
         self.cur_conn_index = 0
         if not len(self.connections):
-            raise Exception('There is no connections to Dash network enabled in the configuration.')
+            raise Exception('There is no connections to chainx network enabled in the configuration.')
         self.cur_conn_def = self.connections[self.cur_conn_index]
 
     def disconnect(self):
@@ -411,7 +269,7 @@ class DashdInterface(WndUtils):
 
     def switch_to_next_config(self):
         """
-        If there is another dashd config not used recently, switch to it. Called only when there was a problem
+        If there is another chainxd config not used recently, switch to it. Called only when there was a problem
         with current connection config.
         :return: True if successfully switched ot False if there was no another config
         """
@@ -440,13 +298,13 @@ class DashdInterface(WndUtils):
 
     def open(self):
         """
-        Opens connection to dash RPC. If it fails, then the next enabled conn config will be used, if any exists.
+        Opens connection to chainx RPC. If it fails, then the next enabled conn config will be used, if any exists.
         :return: True if successfully connected, False if user cancelled the operation. If all of the attempts 
             fail, then appropriate exception will be raised.
         """
         try:
             if not self.cur_conn_def:
-                raise Exception('There is no connections to Dash network enabled in the configuration.')
+                raise Exception('There is no connections to chainx network enabled in the configuration.')
 
             while True:
                 try:
@@ -458,7 +316,7 @@ class DashdInterface(WndUtils):
                 except UserCancelledConnection:
                     return False
                 except (socket.gaierror, ConnectionRefusedError, TimeoutError, socket.timeout) as e:
-                    # exceptions raised by not likely functioning dashd node; try to switch to another node
+                    # exceptions raised by not likely functioning chainxd node; try to switch to another node
                     # if there is any in the config
                     if not self.switch_to_next_config():
                         raise e  # couldn't use another conn config, raise exception
@@ -472,7 +330,7 @@ class DashdInterface(WndUtils):
 
     def open_internal(self):
         """
-        Try to establish connection to dash RPC daemon for current connection config.
+        Try to establish connection to chainxd RPC daemon for current connection config.
         :return: True, if connection successfully establishes, False if user Cancels the operation (not always 
             cancelling will be possible - only when user is prompted for a password).
         """
@@ -480,7 +338,7 @@ class DashdInterface(WndUtils):
             if self.cur_conn_def.use_ssh_tunnel:
                 # RPC over SSH
                 while True:
-                    self.ssh = DashdSSH(self.cur_conn_def.ssh_conn_cfg.host, self.cur_conn_def.ssh_conn_cfg.port,
+                    self.ssh = ChainxdSSH(self.cur_conn_def.ssh_conn_cfg.host, self.cur_conn_def.ssh_conn_cfg.port,
                                         self.cur_conn_def.ssh_conn_cfg.username)
                     try:
                         logging.info('starting ssh.connect')
@@ -603,7 +461,7 @@ class DashdInterface(WndUtils):
     @control_rpc_call
     def issynchronized(self):
         if self.open():
-            # if connecting to HTTP(S) proxy do not check if dash daemon is synchronized
+            # if connecting to HTTP(S) proxy do not check if chainxd daemon is synchronized
             if self.cur_conn_def.is_http_proxy():
                 return True
             else:
