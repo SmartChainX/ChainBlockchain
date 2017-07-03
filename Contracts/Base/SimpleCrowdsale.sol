@@ -70,7 +70,7 @@ contract SimpleCrowdsale is Ownable, SafeMath {
         ethToken = EtherToken(_ethToken);
     }
 
-    /// @dev Allows users to fill stored order by sending ETH to contract.
+    /// @dev Allows users to fill stored order by sending ChainX to contract.
     function()
         payable
         saleInitialized
@@ -129,7 +129,7 @@ contract SimpleCrowdsale is Ownable, SafeMath {
         });
 
         assert(order.tokenM == PROTOCOL_TOKEN_ADDRESS);
-        assert(order.tokenT == ETH_TOKEN_ADDRESS);
+        assert(order.tokenT == CHX_TOKEN_ADDRESS);
 
         assert(isValidSignature(
             order.maker,
