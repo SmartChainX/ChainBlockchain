@@ -67,7 +67,7 @@ contract SimpleCrowdsale is Ownable, SafeMath {
 
         exchange = Exchange(_exchange);
         protocolToken = Token(_protocolToken);
-        ethToken = EtherToken(_ethToken);
+        Token = CHXToken(_chxToken);
     }
 
     /// @dev Allows users to fill stored order by sending ChainX to contract.
@@ -76,21 +76,21 @@ contract SimpleCrowdsale is Ownable, SafeMath {
         saleInitialized
         saleNotFinished
     {
-        uint remainingEth = safeSub(order.valueT, exchange.getUnavailableValueT(order.orderHash));
-        uint ethToFill = min(msg.value, remainingEth);
-        ethToken.deposit.value(ethToFill)();
+        uint remainingChx = safeSub(order.valueT, exchange.getUnavailableValueT(order.orderHash));
+        uint chxToFill = min(msg.value, remainingChx);
+        chxToken.deposit.value(chxToFill)();
         assert(exchange.fillOrKill(
             [order.maker, order.taker, order.tokenM, order.tokenT, order.feeRecipient],
             [order.valueM, order.valueT, order.feeM, order.feeT, order.expiration, order.salt],
-            ethToFill,
+            chxToFill,
             order.v,
             order.r,
             order.s
         ));
-        uint filledProtocolToken = safeDiv(safeMul(order.valueM, ethToFill), order.valueT);
+        uint filledProtocolToken = safeDiv(safeMul(order.valueM, chxToFill), order.valueT);
         assert(protocolToken.transfer(msg.sender, filledProtocolToken));
-        if (ethToFill < msg.value) {
-            assert(msg.sender.send(safeSub(msg.value, ethToFill)));
+        if (chxToFill < msg.value) {
+            assert(msg.sender.send(safeSub(msg.value, chxToFill)));
             isFinished = true;
         }
     }
@@ -193,7 +193,7 @@ contract SimpleCrowdsale is Ownable, SafeMath {
         returns (bool isValid)
     {
         return pubKey == ecrecover(
-            sha3("\x19Ethereum Signed Message:\n32", hash),
+            sha3("\x19CHX Signed Message:\n32", hash),
             v,
             r,
             s
