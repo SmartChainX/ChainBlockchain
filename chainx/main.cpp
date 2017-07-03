@@ -139,7 +139,7 @@ void help()
 		<< endl
 		<< "General Options:" << endl
 		<< "    -d,--db-path,--datadir <path>  Load database from path (default: " << getDataDir() << ")." << endl
-#if ETH_EVMJIT
+#if CHAINX_EVMJIT
 		<< "    --vm <vm-kind>  Select VM; options are: interpreter, jit or smart (default: interpreter)." << endl
 #endif // chainx_EVMJIT
 		<< "    -v,--verbosity <0 - 9>  Set the log verbosity from 0 to 9 (default: 8)." << endl
