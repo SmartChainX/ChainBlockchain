@@ -85,6 +85,7 @@ class Ui_AboutDlg(object):
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Arial\'; font-size:13pt; font-weight:400; font-style:normal;\">\n"
+
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:11pt;\">This application is free for commercial and non-commercial use and is released as open source project.</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:11pt;\"> </span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:11pt; font-weight:600;\">Project\'s GitHub URL:</span><span style=\" font-size:11pt;\"> </span><a href=\"https://github.com/Bertrand256/masternode-tool\"><span style=\" font-size:11pt; text-decoration: underline; color:#0000ff;\">https://github.com/Bertrand256/masternode-tool</span></a><span style=\" font-size:11pt;\"> </span></p>\n"
@@ -96,7 +97,8 @@ class Ui_AboutDlg(object):
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8.25pt;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:11pt; font-weight:600;\">Author:</span><span style=\" font-size:11pt;\"> Bertrand256 </span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:11pt;\">ChainX address: XwZzf7yqYoUBnDFqE7r3zuNmpwKo1CYLMC</span></p></body></html>"))
-        self.btnClose.setText(_translate("AboutDlg", "Close"))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indeent:0px;\"><span style=\" font-size:11pt; font-weight:600;\">Author:</span><span style=\" font-size:11pt;\"> Bertrand256 </span></p>\n"
+       self.btnClose.setText(_translate("AboutDlg", "Close"))
 
 
 if __name__ == "__main__":
