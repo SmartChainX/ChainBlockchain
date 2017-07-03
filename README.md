@@ -5,8 +5,6 @@ ChainX Core
  `v0.giga.12 ChainX Core`
 
  
-
-
 What is ChainX?
 ----------------
 
