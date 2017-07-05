@@ -78,7 +78,13 @@ func ReadVarint63(r *Reader) (uint64, error) {
 	if val > math.MaxInt64 {
 		return 0, ErrRange
 	}
-	return val, nil
+	return val, nilfunc (r *Reader) Read(p []byte) (n int, err error) {
+	n = copy(p, r.buf)
+	r.buf = r.buf[n:]
+	if len(r.buf) == 0 {
+		err = io.EOF
+	}
+	return
 }
 
 func ReadVarstr31(r *Reader) ([]byte, error) {
