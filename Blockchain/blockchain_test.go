@@ -137,7 +137,11 @@ func TestVarint63(t *testing.T) {
 		if uint64(v) != c.n {
 			t.Errorf("ReadVarint63 got %d, want %d", v, c.n)
 		}
-	}
+
+func BenchmarkWriteVarint63(b *testing.B) {
+	n := uint64(math.MaxInt64)
+	for i := 0; i < b.N; i++ {
+		WriteVarint63(ioutil.Discard, n)	}
 }
 
 func TestVarstring31(t *testing.T) {
@@ -158,6 +162,7 @@ func TestVarstring31(t *testing.T) {
 	want = []byte{10, 11, 12}
 	if !bytes.Equal(s, want) {
 		t.Errorf("got %x, expected %x", s, want)
+		
 	}
 }
 
