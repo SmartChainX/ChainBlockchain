@@ -16,6 +16,18 @@ else
     echo Unsupported OS X version.  
     exit 1
 fi
+# prepare receipt
+if [ ${OSX_VERSION} == yosemite ]; then
+    sed -e s/revision\ \=\>\ \'[[:xdigit:]][[:xdigit:]]*\'/revision\ \=\>\ \'${HASH}\'/g \
+        -e s/version\ \'.*\'/version\ \'${VERSION}\'/g \
+        -e s/sha1\ \'[[:xdigit:]][[:xdigit:]]*\'\ \=\>\ \:\yosemite/sha1\ \'${SIGNATURE}\'\ \=\>\ \:yosemite/g \
+        -e s/revision[[:space:]][[:digit:]][[:digit:]]*/revision\ ${NUMBER}/g 
+else
+    sed -e s/revision\ \=\>\ \'[[:xdigit:]][[:xdigit:]]*\'/revision\ \=\>\ \'${HASH}\'/g \
+        -e s/version\ \'.*\'/version\ \'${VERSION}\'/g \
+        -e s/sha1\ \'[[:xdigit:]][[:xdigit:]]*\'\ \=\>\ \:\el\_capitan/sha1\ \'${SIGNATURE}\'\ \=\>\ \:el\_capitan/g \
+        -e s/revision[[:space:]][[:digit:]][[:digit:]]*/revision\ ${NUMBER}/g 
+fi
 
 while [ "$1" != "" ]; do
     case $1 in
