@@ -13,6 +13,7 @@ define $(package)_config_cmds
 endef
 
 define $(package)_build_cmds
+$($(package)_autoconf)
   $(MAKE)
 endef
 
