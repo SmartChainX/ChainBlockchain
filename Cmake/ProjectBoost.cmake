@@ -80,7 +80,7 @@ ExternalProject_Add(boost
 
         --with-program_options  # libff wants it, we may need it in future.
 
-    LOG_BUILD 1
+{BOOST_LIBRARY_SUFFIX})    LOG_BUILD 1
 
     INSTALL_COMMAND ""
 
@@ -130,7 +130,7 @@ add_dependencies(Boost::System boost)
 
 add_library(Boost::Filesystem STATIC IMPORTED)
 
-set_property(TARGET Boost::Filesystem PROPERTY IMPORTED_LOCATION ${BOOST_LIBRARY_DIR}/libboost_filesystem$
+set_property(TARGET Boost::Filesystem PROPERTY IMPORTED_LOCATION ${BOOST_LIBRARY_DIR}/libboost_filesystem${BOOST_LIBRARY_SUFFIX})
 
 set_property(TARGET Boost::Filesystem PROPERTY INTERFACE_LINK_LIBRARIES Boost::System)
 
