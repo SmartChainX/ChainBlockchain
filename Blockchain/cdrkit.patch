@@ -1,0 +1,13 @@
++++ cdrkit-1.1.11/genisoimage/tree.c	
+@@ -1139,8 +1139,9 @@
+ scan_directory_tree(struct directory *this_dir, char *path, 
+ 						  struct directory_entry *de)
+ {
+-	DIR		*current_dir;
++        int             current_file;
+ 	char		whole_path[PATH_MAX];
++        struct dirent  **d_list;
+ 	struct dirent	*d_entry;
+ 	struct directory *parent;
+ 	int		dflag;
+@@ -1164,7 +1165,8 @@
